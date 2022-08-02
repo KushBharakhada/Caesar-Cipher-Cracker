@@ -7,7 +7,7 @@
 module CaesarCipher where
 
   -- IMPORTS
-  import Data.Char (toLower, toUpper, isLower, isUpper, ord)
+  import Data.Char (toLower, toUpper, isLower, isUpper, ord, digitToInt, isDigit)
   import Data.List (sortOn)
 
   -- TYPE DECLARATIONS
@@ -83,12 +83,66 @@ module CaesarCipher where
   pairs :: String -> [(Int, Int)]
   pairs str = zip [0..25] $ allShifts str
 
-  sortPairs :: String -> [(Int, Int)]
+  -- Key and value pairs ordered from most likely to least
+  sortPairs :: String -> [Int]
   sortPairs str = do
-    let r = [s | s <- sorted ] where sorted = sortOn snd $ pairs str
+    let r = [fst s | s <- sorted ] where sorted = sortOn snd $ pairs str
     reverse r
                  
-                
+  -- IO
+
+  -- Prompts the user for text
+  getText :: IO String
+  getText = do
+    putStrLn "Enter Text: "
+    str <- getLine
+    return str
+
+  -- Prompts the user for a shift value
+  getShift :: IO Int
+  getShift = do 
+    putStr "Enter a Key Shift Value: "
+    x <- getLine
+    if isInteger x then
+      return (read x :: Int)
+    else 
+      do putStrLn "ERROR: Value Entered is NOT a Valid Integer!"
+         getShift
+
+  -- Checks if a value is an integer
+  isInteger :: String -> Bool
+  isInteger [] = False
+  isInteger ns = and [isDigit n | n <- ns]
+
+  -- Shifting text by a key, both provided by user
+  shiftIO :: IO ()
+  shiftIO = do
+    str <- getText
+    key <- getShift
+    putStrLn $ shiftStr str key
+
+  -- Displays the possible keys from most likely to least given some text
+  findKeys :: IO ()
+  findKeys = do
+    str <- getText
+    putStrLn $ printKey $ sortPairs str
+
+  -- Helper to print the keys
+  printKey :: [Int] -> String
+  printKey ns = concat [show n ++ " Key shifts\n" | n <- ns]
+
+  -- Prompts user to either shift or retrieve keys given text
+  options :: IO ()
+  options = do
+    x <- getLine
+    let y = x !! 0
+    if y == 's' || y == 'S' then shiftIO
+    else if y == 'k' || y == 'K' then findKeys
+    else
+      do putStrLn "Please provide a valid character"
+         options -- Ask again if not valid
+
+
               
 
 
