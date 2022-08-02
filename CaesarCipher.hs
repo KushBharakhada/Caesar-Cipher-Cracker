@@ -46,4 +46,43 @@ module CaesarCipher where
   freqSum :: LetterFreq -> LetterFreq -> Int
   freqSum xs ys = sum $ freqMult xs ys
 
+  -- SHIFTING
+
+  char2Int :: Char -> Int
+  char2Int c = ord c 
+
+  int2Char :: Int -> Char
+  int2Char n = toEnum n
+
+  -- Allows alphabet letters to loop round back to start
+  loop :: Char -> Char -> Int -> Char
+  loop s c n = do 
+    let sx = char2Int s; cx = char2Int c
+      in int2Char $ (cx + n - sx) `mod` 26 + sx
+
+  -- Shifts a character
+  shift :: Char -> Int -> Char
+  shift c n | isLower c = loop 'a' c n
+            | isUpper c = loop 'A' c n
+            | otherwise = c
+  
+  -- SHIFT (CIPHER)
+
+  -- Shift text
+  shiftStr :: String -> Int -> String
+  shiftStr str n = [shift c n | c <- str]
+
+  -- SHIFT (DECIPHER) 
+
+  -- Finds the sum for every shift (higher the more likely the shift)
+  allShifts :: String -> [Int]
+  allShifts str = [freqSum freqE $ freqT (shiftStr str n) | n <- [0..25]]
+
+  -- Pairs the key with the sum for that shift 
+  keySum :: String -> [(Int, Int)]
+  keySum str = zip [0..25] $ allShifts str
+                 
+                
+              
+
 
