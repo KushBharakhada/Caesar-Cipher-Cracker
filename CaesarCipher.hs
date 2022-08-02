@@ -7,7 +7,8 @@
 module CaesarCipher where
 
   -- IMPORTS
-  import Data.Char
+  import Data.Char (toLower, toUpper, isLower, isUpper, ord)
+  import Data.List (sortOn)
 
   -- TYPE DECLARATIONS
   type Letter = Char
@@ -58,7 +59,7 @@ module CaesarCipher where
   loop :: Char -> Char -> Int -> Char
   loop s c n = do 
     let sx = char2Int s; cx = char2Int c
-      in int2Char $ (cx + n - sx) `mod` 26 + sx
+    int2Char $ (cx + n - sx) `mod` 26 + sx
 
   -- Shifts a character
   shift :: Char -> Int -> Char
@@ -79,8 +80,13 @@ module CaesarCipher where
   allShifts str = [freqSum freqE $ freqT (shiftStr str n) | n <- [0..25]]
 
   -- Pairs the key with the sum for that shift 
-  keySum :: String -> [(Int, Int)]
-  keySum str = zip [0..25] $ allShifts str
+  pairs :: String -> [(Int, Int)]
+  pairs str = zip [0..25] $ allShifts str
+
+  sortPairs :: String -> [(Int, Int)]
+  sortPairs str = do
+    let r = [s | s <- sorted ] where sorted = sortOn snd $ pairs str
+    reverse r
                  
                 
               
