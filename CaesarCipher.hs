@@ -9,6 +9,7 @@ module CaesarCipher where
   -- IMPORTS
   import Data.Char (toLower, toUpper, isLower, isUpper, ord, digitToInt, isDigit)
   import Data.List (sortOn)
+  import System.IO
 
   -- TYPE DECLARATIONS
   type Letter = Char
@@ -91,6 +92,9 @@ module CaesarCipher where
                  
   -- IO
 
+  newline :: IO ()
+  newline = putChar '\n'
+
   -- Prompts the user for text
   getText :: IO String
   getText = do
@@ -119,30 +123,51 @@ module CaesarCipher where
   shiftIO = do
     str <- getText
     key <- getShift
+    newline
+    putStrLn "The output is: "
     putStrLn $ shiftStr str key
 
   -- Displays the possible keys from most likely to least given some text
   findKeys :: IO ()
   findKeys = do
     str <- getText
+    newline
+    putStrLn "The Keys are displayed from most likely shift to least likely. "
+    putStrLn ("You can decipher the text by choosing the shift option and typing " ++
+     "the top Key Shift Value.")
     putStrLn $ printKey $ sortPairs str
 
   -- Helper to print the keys
   printKey :: [Int] -> String
-  printKey ns = concat [show n ++ " Key shifts\n" | n <- ns]
+  printKey ns = concat ["- " ++ show n ++ " Key shifts\n" | n <- ns]
 
   -- Prompts user to either shift or retrieve keys given text
   options :: IO ()
   options = do
+    putStr "Enter option: "
     x <- getLine
     let y = x !! 0
-    if y == 's' || y == 'S' then shiftIO
-    else if y == 'k' || y == 'K' then findKeys
+    if y == 's' || y == 'S' then 
+      do putStrLn "[SHIFT KEY MODE]"
+         shiftIO
+    else if y == 'k' || y == 'K' then 
+      do putStrLn "[SHIFT KEY FINDER MODE]"
+         findKeys
     else
       do putStrLn "Please provide a valid character"
          options -- Ask again if not valid
 
-
+  -- Main program
+  main :: IO ()
+  main = do
+    hSetBuffering stdout NoBuffering -- Due to problems in .exe
+    putStrLn "- Enter (k) to find the shift value of a text."
+    putStrLn "- Enter (s) to shift text by a value"
+    putStrLn "------------------------------------------------------------------"
+    options
+    putStrLn "------------------------------------------------------------------"
+    main
+    
               
 
 
