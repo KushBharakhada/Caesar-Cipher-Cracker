@@ -122,19 +122,22 @@ module CaesarCipher where
   shiftIO :: IO ()
   shiftIO = do
     str <- getText
+    newline
     key <- getShift
     newline
     putStrLn "The output is: "
     putStrLn $ shiftStr str key
+    newline
 
   -- Displays the possible keys from most likely to least given some text
   findKeys :: IO ()
   findKeys = do
     str <- getText
     newline
-    putStrLn "The Keys are displayed from most likely shift to least likely. "
-    putStrLn ("You can decipher the text by choosing the shift option and typing " ++
-     "the top Key Shift Value.")
+    putStrLn "The Keys are displayed from MOST likely shift to LEAST likely."
+    putStrLn "They are the key shifts required to return the original text."
+    putStrLn ("You can decipher the text by choosing the shift (s) option " ++
+     "and typing the top Key Shift Value.")
     putStrLn $ printKey $ sortPairs str
 
   -- Helper to print the keys
@@ -149,9 +152,11 @@ module CaesarCipher where
     let y = x !! 0
     if y == 's' || y == 'S' then 
       do putStrLn "[SHIFT KEY MODE]"
+         newline
          shiftIO
     else if y == 'k' || y == 'K' then 
       do putStrLn "[SHIFT KEY FINDER MODE]"
+         newline
          findKeys
     else
       do putStrLn "Please provide a valid character"
